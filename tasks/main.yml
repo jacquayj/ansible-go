@@ -1,5 +1,6 @@
 ---
 - name: Download the Go tarball
+  become: true
   get_url:
     url: "{{ go_download_location }}"
     dest: /usr/local/src/{{ go_tarball }}
@@ -12,12 +13,14 @@
   changed_when: false
 
 - name: Remove old installation of Go
+  become: true
   file:
     path: /usr/local/go
     state: absent
   when: go_version|failed or go_version.stdout != go_version_target
 
 - name: Extract the Go tarball if Go is not yet installed or not the desired version
+  become: true
   unarchive:
     src: /usr/local/src/{{ go_tarball }}
     dest: /usr/local
@@ -25,11 +28,13 @@
   when: go_version|failed or go_version.stdout != go_version_target
 
 - name: Add the Go bin directory to the PATH environment variable for all users
+  become: true
   copy:
     src: go-bin.sh
     dest: /etc/profile.d
 
 - name: Set GOPATH for all users
+  become: true
   copy:
     src: go-path.sh
     dest: /etc/profile.d
